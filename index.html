@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta-Clone Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0095f6; --bg: #fafafa; --border: #dbdbdb; --text: #262626; --danger: #ed4956; --gray: #8e8e8e; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        
+        /* Navbar */
+        .navbar { background: white; border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .navbar h1 { margin: 0; font-family: 'Pacifico', cursive; font-size: 26px; font-weight: normal; color: #000; }
+        
+        .container { max-width: 470px; margin: 30px auto; padding: 0 15px; }
+        
+        /* Cards */
+        .card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 25px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; background: #fafafa; font-family: 'Roboto', sans-serif; font-size: 14px;}
+        input:focus { outline: none; border-color: var(--gray); }
+        button { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; transition: background 0.2s; font-size: 14px;}
+        button:hover { background: #0077c2; }
+        
+        .switch-auth { text-align: center; margin-top: 20px; font-size: 14px; }
+        .switch-auth a { color: var(--primary); cursor: pointer; font-weight: 500; text-decoration: none; }
+        
+        /* Posts */
+        .post { background: white; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.03);}
+        .post-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #efefef; }
+        .user-info { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 14px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); padding: 2px; }
+        .avatar-inner { width: 100%; height: 100%; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--gray); border: 1px solid white;}
+        
+        .post img { width: 100%; max-height: 600px; object-fit: cover; display: block; background: #efefef; }
+        
+        .post-footer { padding: 15px; }
+        .action-bar { margin-bottom: 10px; font-size: 24px; display: flex; gap: 15px; }
+        .action-icon { cursor: pointer; transition: transform 0.1s; display: flex; align-items: center; gap: 6px;}
+        .action-icon:active { transform: scale(0.9); }
+        .likes-count { font-weight: 700; font-size: 14px; margin-bottom: 8px;}
+        
+        .caption { font-size: 14px; margin-bottom: 8px; line-height: 1.4;}
+        .comments-section { font-size: 14px; margin-bottom: 10px; }
+        .comment { margin-bottom: 6px; line-height: 1.4;}
+        
+        /* Add Comment Box */
+        .add-comment-box { display: flex; margin-top: 15px; border-top: 1px solid #efefef; padding-top: 15px; align-items: center;}
+        .add-comment-box input { border: none; background: transparent; margin: 0; padding: 0; font-size: 14px;}
+        .add-comment-box button { width: auto; background: transparent; color: var(--primary); padding: 0 5px; font-weight: 500; }
+        .add-comment-box button:hover { background: transparent; color: #00376b; }
+        
+        .btn-delete { background: transparent; color: var(--danger); width: auto; padding: 4px 8px; font-size: 12px; border-radius: 4px; }
+        .btn-delete:hover { background: #fee2e2; color: var(--danger); }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h1>Insta-Clone</h1>
+        <button id="logoutBtn" class="hidden" style="width: auto; background: #efefef; color: var(--text); padding: 8px 16px; border-radius: 6px;" onclick="logout()">Log Out</button>
+    </nav>
+
+    <div class="container">
+        <div id="authSection" class="card">
+            <h2 id="authTitle" style="text-align: center; margin-bottom: 25px; font-family: 'Pacifico', cursive; font-size: 32px; font-weight: normal;">Insta-Clone</h2>
+            <input type="text" id="username" placeholder="Phone number, username, or email">
+            <input type="password" id="password" placeholder="Password">
+            <button id="authBtn" onclick="authenticate()">Log In</button>
+            <div class="switch-auth">
+                <span id="authPrompt">Don't have an account?</span> 
+                <a onclick="toggleAuthMode()" id="authToggle">Sign up</a>
+            </div>
+        </div>
+
+        <div id="appSection" class="hidden">
+            <div class="card" style="padding-bottom: 10px;">
+                <h3 style="margin-top: 0; font-size: 16px;">Create a Post</h3>
+                <input type="file" id="imageFile" accept="image/*" style="background: white; border: none; padding: 0; font-size: 13px;">
+                <input type="text" id="caption" placeholder="Write a caption...">
+                <button onclick="createPost()">Share</button>
+            </div>
+            <div id="feed"></div>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+        let currentUser = JSON.parse(localStorage.getItem('instaUser')) || null;
+
+        function checkAuth() {
+            if (currentUser) {
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('appSection').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                loadFeed();
+            } else {
+                document.getElementById('authSection').classList.remove('hidden');
+                document.getElementById('appSection').classList.add('hidden');
+                document.getElementById('logoutBtn').classList.add('hidden');
+            }
+        }
+
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            document.getElementById('authTitle').innerText = isLogin ? "Insta-Clone" : "Join Insta-Clone";
+            document.getElementById('authBtn').innerText = isLogin ? "Log In" : "Sign Up";
+            document.getElementById('authPrompt').innerText = isLogin ? "Don't have an account?" : "Already have an account?";
+            document.getElementById('authToggle').innerText = isLogin ? "Sign up" : "Log in";
+        }
+
+        async function authenticate() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if (!u || !p) return alert("Fill in all fields");
+
+            const res = await fetch(isLogin ? '/api/login' : '/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentUser = { id: data.userId, username: data.username };
+                localStorage.setItem('instaUser', JSON.stringify(currentUser));
+                checkAuth();
+            } else {
+                alert(data.error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('instaUser');
+            currentUser = null;
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            checkAuth();
+        }
+
+        async function loadFeed() {
+            const res = await fetch('/api/posts');
+            const posts = await res.json();
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '';
+
+            posts.forEach(post => {
+                const deleteBtn = (post.user_id === currentUser.id) 
+                    ? `<button class="btn-delete" onclick="deletePost(${post.id})">Delete</button>` : '';
+
+                const commentsHtml = post.comments.map(c => `<div class="comment"><b>${c.username}</b> ${c.text}</div>`).join('');
+                
+                // Extract first letter for avatar
+                const initial = post.username.charAt(0).toUpperCase();
+
+                feed.innerHTML += `
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="user-info">
+                                <div class="avatar"><div class="avatar-inner">${initial}</div></div>
+                                <span>${post.username}</span>
+                            </div>
+                            ${deleteBtn}
+                        </div>
+                        <img src="${post.image_url}" alt="Post Image">
+                        <div class="post-footer">
+                            <div class="action-bar">
+                                <span class="action-icon" onclick="likePost(${post.id})">❤️</span>
+                            </div>
+                            <div class="likes-count">${post.likes} likes</div>
+                            <div class="caption"><b>${post.username}</b> ${post.caption}</div>
+                            
+                            <div class="comments-section">${commentsHtml}</div>
+                            
+                            <div class="add-comment-box">
+                                <input type="text" id="comment-input-${post.id}" placeholder="Add a comment...">
+                                <button onclick="addComment(${post.id})">Post</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function createPost() {
+            const fileInput = document.getElementById('imageFile');
+            const cap = document.getElementById('caption').value;
+            
+            if(fileInput.files.length === 0) return alert("Please select an image!");
+
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            formData.append('caption', cap);
+            formData.append('userId', currentUser.id);
+            formData.append('username', currentUser.username);
+
+            await fetch('/api/posts', { method: 'POST', body: formData });
+            
+            fileInput.value = '';
+            document.getElementById('caption').value = '';
+            loadFeed();
+        }
+
+        async function deletePost(id) {
+            if(!confirm("Delete this post?")) return;
+            await fetch(`/api/posts/${id}`, { 
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id })
+            });
+            loadFeed();
+        }
+
+        async function likePost(id) {
+            await fetch(`/api/posts/${id}/like`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id })
+            });
+            loadFeed();
+        }
+
+        async function addComment(id) {
+            const text = document.getElementById(`comment-input-${id}`).value;
+            if(!text) return;
+            await fetch(`/api/posts/${id}/comment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: currentUser.username, text: text })
+            });
+            loadFeed();
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>
